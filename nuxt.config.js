@@ -24,16 +24,21 @@ export default {
     // https://go.nuxtjs.dev/eslint
     '@nuxtjs/eslint-module',
     // https://go.nuxtjs.dev/stylelint
-    '@nuxtjs/stylelint-module',
+    // '@nuxtjs/stylelint-module',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
+    'nuxt-stylus-resources-loader',
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
   ],
+
+  styleResources: {
+    stylus: [],
+  },
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {},
