@@ -1,55 +1,30 @@
-<template>
-  <div>
-    <Nuxt />
-  </div>
+<template lang="pug">
+el-container
+    el-header
+        el-row(type="flex", justify="center")
+            el-col.header-container(:xs="24", :sm="18", :md="12", :lg="10")
+                app-logo
+                app-navigation
+    el-main
+        el-row(type="flex", justify="center")
+            el-col(:xs="24", :sm="18", :md="12", :lg="10")
+                nuxt
 </template>
 
-<style>
-html {
-  font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, sans-serif;
-  font-size: 16px;
-  word-spacing: 1px;
-  -ms-text-size-adjust: 100%;
-  -webkit-text-size-adjust: 100%;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
-  box-sizing: border-box;
+<script>
+import AppLogo from '@/components/Logo'
+import AppNavigation from '@/components/main/Navigation.vue'
+export default {
+    components: {
+        AppNavigation,
+        AppLogo,
+    },
 }
+</script>
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-}
-
-.button--green {
-  display: inline-block;
-  border-radius: 4px;
-  border: 1px solid #3b8070;
-  color: #3b8070;
-  text-decoration: none;
-  padding: 10px 30px;
-}
-
-.button--green:hover {
-  color: #fff;
-  background-color: #3b8070;
-}
-
-.button--grey {
-  display: inline-block;
-  border-radius: 4px;
-  border: 1px solid #35495e;
-  color: #35495e;
-  text-decoration: none;
-  padding: 10px 30px;
-  margin-left: 15px;
-}
-
-.button--grey:hover {
-  color: #fff;
-  background-color: #35495e;
-}
+<style lang="stylus" scoped>
+.header-container
+    display flex
+    border-bottom solid 1px #e6e6e6
+    align-items center
 </style>

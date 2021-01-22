@@ -1,6 +1,6 @@
 <template lang="pug">
 .container
-  h1 Hello
+    h1 Hello
 </template>
 
 <script>
