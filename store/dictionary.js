@@ -83,7 +83,7 @@ export const state = () => ({
 export const getters = {
     getAllWords: state => state.dictionary,
     getStatus: state => state.status,
-    randomWordLearn: state => {
+    wordsLearn: state => {
         return state.dictionary.filter(obj => obj.status === 0)
     },
 }
@@ -110,6 +110,10 @@ export const mutations = {
             }
         })
     },
+    addToDictionary({dictionary}, word) {
+        word.id = Date.now()
+        dictionary.push(word)
+    },
 }
 
 export const actions = {
@@ -121,5 +125,8 @@ export const actions = {
     },
     changeStatus({commit}, id) {
         commit('changeStatus', id)
+    },
+    addToDictionary({commit}, word) {
+        commit('addToDictionary', word)
     },
 }

@@ -69,6 +69,7 @@ export default {
                         type: 'success',
                         message: `Слово было успешно изменено на ${this.word.rus} ${this.word.eng}`,
                     })
+                    this.$nuxt.$emit('get-random-word')
                     setTimeout(() => {
                         this.onClose()
                         this.submitDisabled = false

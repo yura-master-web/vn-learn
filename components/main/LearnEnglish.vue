@@ -2,10 +2,10 @@
 el-row(type="flex", justify="center")
     el-col.header-container(:lg="20")
         .wrap-inputs.mb-1
-            el-input(v-model="inputRus")
+            el-input(v-model="inputRus", :class="{ empty: emptyRus }")
             .sepor
-            el-input(v-model="inputEng", @keyup.enter.native="checkEnter")
-        div(type="flex")
+            el-input(v-model="inputEng", :class="{ empty: emptyEng }", @keyup.enter.native="checkEnter")
+        div
             el-button(type="primary", plain, @click="verifyWord") Проверить
             el-button(type="warning", plain, @click="showHelp") Подсказать
         .status-field
@@ -14,10 +14,15 @@ el-row(type="flex", justify="center")
                 p.h-error(v-else-if="error === 'ERROR'", key="error") Ответ не верен (
                 p.h-already(v-else-if="error === 'IS-ALREADY'", key="is-already") Такое слово уже есть в словаре
                 p.h-help(v-else-if="error === 'HELP'", key="help") {{ wordEng }}
-        app-table-words
+                p.h-error(v-else-if="error === 'EMPTY'", key="empty") Поля должны быть заполнены
+                p.h-success(v-else-if="error === 'ADD-TO-LIB'", key="addToLib") Слово успешно добавлено
+        .mb-1
+            el-button(plain, @click="addToDictionary") Добавить слово в словарь
+        app-table-words(@chageStatus="getRandomWord")
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import AppTableWords from './TableWords'
 export default {
     name: 'LearnEnglish',
@@ -26,23 +31,35 @@ export default {
     },
     data() {
         return {
-            words: [],
             inputRus: '',
             inputEng: '',
             status: 0,
             wordEng: '',
             error: '',
+            emptyRus: false,
+            emptyEng: false,
         }
     },
+    computed: {
+        ...mapGetters('dictionary', {
+            words: 'getAllWords',
+            wordsLearning: 'wordsLearn',
+        }),
+    },
     created() {
-        this.words = this.$store.getters['dictionary/randomWordLearn']
         this.getRandomWord()
+        this.$nuxt.$on('get-random-word', this.getRandomWord)
     },
     methods: {
         getRandomWord() {
-            const word = this.words[Math.floor(Math.random() * this.words.length)]
-            this.inputRus = word.rus
-            this.wordEng = word.eng
+            if (this.wordsLearning.length === 0) {
+                this.inputRus = ''
+                this.wordEng = 'Empty word rus'
+            } else {
+                const word = this.wordsLearning[Math.floor(Math.random() * this.wordsLearning.length)]
+                this.inputRus = word.rus
+                this.wordEng = word.eng
+            }
         },
         verifyWord() {
             if (this.inputEng.trim() === this.wordEng) {
@@ -62,6 +79,30 @@ export default {
             setTimeout(() => {
                 this.error = ''
             }, time)
+        },
+        addToDictionary() {
+            if (this.inputRus === '' || this.inputEng === '') {
+                this.error = 'EMPTY'
+                this.emptyRus = this.inputRus === '' ? !0 : !1
+                this.emptyEng = this.inputEng === '' ? !0 : !1
+                return false
+            } else {
+                this.error = ''
+                this.emptyRus = ''
+                this.emptyEng = ''
+            }
+            const rus = this.inputRus.trim()
+            const eng = this.inputEng.trim()
+            if (this.words.every(obj => (obj.rus === rus || obj.eng === eng ? !1 : !0))) {
+                this.$store.dispatch('dictionary/addToDictionary', {
+                    rus,
+                    eng,
+                    status: 0,
+                })
+                this.error = 'ADD-TO-LIB'
+            } else {
+                this.error = 'IS-ALREADY'
+            }
         },
     },
 }
@@ -99,4 +140,9 @@ export default {
     color gray
 .h-help
     color orange
+</style>
+<style lang="stylus">
+.empty input
+    border-color red
+    transition border-color .27s
 </style>

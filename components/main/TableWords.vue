@@ -56,7 +56,6 @@ export default {
     },
     methods: {
         filterTable() {
-            console.log('change ', this.filterText)
             const rows = this.$refs.tableDictionary.$refs.bodyWrapper.getElementsByClassName('el-table__row')
             for (const row of rows) {
                 const cells = row.getElementsByTagName('td')
@@ -80,6 +79,7 @@ export default {
             this.$store.dispatch('dictionary/changeStatus', id)
             this.$refs.tableDictionary.sort('status', 'ascending')
             setTimeout(() => this.filterTable(), 0)
+            this.$emit('chageStatus')
         },
         sortStatus(a, b) {
             return a.status - b.status
