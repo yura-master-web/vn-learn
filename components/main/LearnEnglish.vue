@@ -1,6 +1,6 @@
 <template lang="pug">
 el-row(type="flex", justify="center")
-    el-col.header-container(:xs="24", :sm="18", :md="12", :lg="15")
+    el-col.header-container(:lg="20")
         .wrap-inputs.mb-1
             el-input(v-model="inputRus")
             .sepor
@@ -14,12 +14,16 @@ el-row(type="flex", justify="center")
                 p.h-error(v-else-if="error === 'ERROR'", key="error") Ответ не верен (
                 p.h-already(v-else-if="error === 'IS-ALREADY'", key="is-already") Такое слово уже есть в словаре
                 p.h-help(v-else-if="error === 'HELP'", key="help") {{ wordEng }}
+        app-table-words
 </template>
 
 <script>
+import AppTableWords from './TableWords'
 export default {
     name: 'LearnEnglish',
-
+    components: {
+        AppTableWords,
+    },
     data() {
         return {
             words: [],

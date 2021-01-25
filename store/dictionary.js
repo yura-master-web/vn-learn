@@ -1,5 +1,5 @@
 export const state = () => ({
-    'status-text': {
+    status: {
         0: 'Учу',
         1: 'Знаю',
         2: 'Знаю железно',
@@ -69,6 +69,8 @@ export const state = () => ({
 })
 
 export const getters = {
+    getAllWords: state => state.dictionary,
+    getStatus: state => state.status,
     randomWordLearn: state => {
         return state.dictionary.filter(obj => obj.status === 0)
     },
