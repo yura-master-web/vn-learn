@@ -6,61 +6,73 @@ export const state = () => ({
     },
     dictionary: [
         {
+            id: 0,
             rus: 'январь',
             eng: 'january',
             status: 0,
         },
         {
+            id: 1,
             rus: 'февраль',
             eng: 'february',
             status: 0,
         },
         {
+            id: 2,
             rus: 'март',
             eng: 'march',
             status: 2,
         },
         {
+            id: 3,
             rus: 'апрель',
             eng: 'april',
             status: 2,
         },
         {
+            id: 4,
             rus: 'май',
             eng: 'may',
             status: 2,
         },
         {
+            id: 5,
             rus: 'июнь',
             eng: 'june',
             status: 1,
         },
         {
+            id: 6,
             rus: 'июль',
             eng: 'jule',
             status: 1,
         },
         {
+            id: 7,
             rus: 'август',
             eng: 'august',
             status: 1,
         },
         {
+            id: 8,
             rus: 'сентябрь',
             eng: 'september',
             status: 0,
         },
         {
+            id: 9,
             rus: 'октябрь',
             eng: 'october',
             status: 0,
         },
         {
+            id: 10,
             rus: 'ноябрь',
             eng: 'november',
             status: 0,
         },
         {
+            id: 11,
             rus: 'декабрь',
             eng: 'december',
             status: 0,
@@ -73,5 +85,23 @@ export const getters = {
     getStatus: state => state.status,
     randomWordLearn: state => {
         return state.dictionary.filter(obj => obj.status === 0)
+    },
+}
+
+export const mutations = {
+    updateWord({dictionary}, {rus, eng, id}) {
+        dictionary.forEach(obj => {
+            if (obj.id === id) {
+                obj.rus = rus
+                obj.eng = eng
+            }
+        })
+        console.log('update')
+    },
+}
+
+export const actions = {
+    updateWord({commit}, formData) {
+        commit('updateWord', formData)
     },
 }

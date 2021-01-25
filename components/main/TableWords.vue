@@ -7,23 +7,32 @@ div
         el-table-column(label="Перевод", sortable, :sort-method="sortEngWords")
             template(slot-scope="{row: {eng}}") {{ eng }}
         el-table-column(label="Статусы", width="150", sortable, :sort-method="sortStatus", prop="status")
-            template(slot-scope="{row: {status}}")
-                el-button(size="mini", @click="editWord(rus, eng)") {{ allStatus[status] }}
+            template(slot-scope="{row: {status, id}}")
+                el-button(size="mini", @click="editWord(rus, eng, id)") {{ allStatus[status] }}
         el-table-column
-            template(slot-scope="{row: {rus, eng}}")
-                el-button(size="mini", @click="editWord(rus, eng)") Редакт
+            template(slot-scope="{row: word}")
+                el-button(size="mini", @click="editWord(word)") Редакт
         el-table-column(width="90")
-            template(slot-scope="{row: {rus, eng}}")
-                el-button(size="mini", @click="deleteWord(rus, eng)") X
+            template(slot-scope="{row: {id}}")
+                el-button(size="mini", @click="deleteWord(id)") X
+
+    //- dialogs
+    app-edit-word(:word="word", :editDialog="editDialog", @closeEditDialog="editDialog = false")
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+import AppEditWord from './EditWord'
 export default {
     name: 'TableWords',
-
+    components: {
+        AppEditWord,
+    },
     data() {
-        return {}
+        return {
+            editDialog: false,
+            word: {},
+        }
     },
     computed: {
         ...mapGetters('dictionary', {
@@ -32,8 +41,10 @@ export default {
         }),
     },
     methods: {
-        editWord(rus, eng) {
-            console.log(rus, eng)
+        editWord(word) {
+            console.log('edit word ', word)
+            this.word = { ...word }
+            this.editDialog = true
         },
         deleteWord(rus, eng) {
             console.log(rus, eng)
@@ -63,4 +74,8 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped></style>
+<style lang="stylus" scoped>
+// .dialog-btns
+//     display flex
+//     justify-content flex-end
+</style>
