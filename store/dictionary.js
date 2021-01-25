@@ -96,12 +96,18 @@ export const mutations = {
                 obj.eng = eng
             }
         })
-        console.log('update')
+    },
+    deleteWord({dictionary}, id) {
+        const i = dictionary.map(obj => obj.id).indexOf(id)
+        dictionary.splice(i, 1)
     },
 }
 
 export const actions = {
     updateWord({commit}, formData) {
         commit('updateWord', formData)
+    },
+    deleteWord({commit}, id) {
+        commit('deleteWord', id)
     },
 }

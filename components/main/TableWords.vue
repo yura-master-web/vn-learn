@@ -13,8 +13,8 @@ div
             template(slot-scope="{row: word}")
                 el-button(size="mini", @click="editWord(word)") Редакт
         el-table-column(width="90")
-            template(slot-scope="{row: {id}}")
-                el-button(size="mini", @click="deleteWord(id)") X
+            template(slot-scope="{row: word}")
+                app-delete-word(:word="word")
 
     //- dialogs
     app-edit-word(:word="word", :editDialog="editDialog", @closeEditDialog="editDialog = false")
@@ -23,10 +23,12 @@ div
 <script>
 import { mapGetters } from 'vuex'
 import AppEditWord from './EditWord'
+import AppDeleteWord from './DeleteWord'
 export default {
     name: 'TableWords',
     components: {
         AppEditWord,
+        AppDeleteWord,
     },
     data() {
         return {
@@ -42,12 +44,8 @@ export default {
     },
     methods: {
         editWord(word) {
-            console.log('edit word ', word)
             this.word = { ...word }
             this.editDialog = true
-        },
-        deleteWord(rus, eng) {
-            console.log(rus, eng)
         },
         sortStatus(a, b) {
             return a.status - b.status
