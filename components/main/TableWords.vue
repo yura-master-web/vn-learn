@@ -1,6 +1,17 @@
 <template lang="pug">
 div
-    el-table(:data="words", style="width: 100%", :default-sort="{ prop: 'status', order: 'ascending' }")
+    el-input(
+        placeholder="Please input",
+        suffix-icon="el-icon-search",
+        v-model="filterText",
+        @keyup.native="filterTable"
+    )
+    el-table(
+        :data="words",
+        style="width: 100%",
+        :default-sort="{ prop: 'status', order: 'ascending' }",
+        ref="tableDictionary"
+    )
         el-table-column(type="index", label="N")
         el-table-column(label="Русское", sortable, :sort-method="sortRusWords")
             template(slot-scope="{row: {rus}}") {{ rus }}
@@ -8,7 +19,7 @@ div
             template(slot-scope="{row: {eng}}") {{ eng }}
         el-table-column(label="Статусы", width="150", sortable, :sort-method="sortStatus", prop="status")
             template(slot-scope="{row: {status, id}}")
-                el-button(size="mini", @click="editWord(rus, eng, id)") {{ allStatus[status] }}
+                el-button(size="mini", @click="changeStatus(id)") {{ allStatus[status] }}
         el-table-column
             template(slot-scope="{row: word}")
                 el-button(size="mini", @click="editWord(word)") Редакт
@@ -34,6 +45,7 @@ export default {
         return {
             editDialog: false,
             word: {},
+            filterText: '',
         }
     },
     computed: {
@@ -43,9 +55,31 @@ export default {
         }),
     },
     methods: {
+        filterTable() {
+            console.log('change ', this.filterText)
+            const rows = this.$refs.tableDictionary.$refs.bodyWrapper.getElementsByClassName('el-table__row')
+            for (const row of rows) {
+                const cells = row.getElementsByTagName('td')
+                for (const cell of cells) {
+                    const innerText = cell.textContent.toLowerCase()
+                    const filterText = this.filterText.toLowerCase()
+                    if (innerText.includes(filterText)) {
+                        row.style.display = ''
+                        break
+                    } else {
+                        row.style.display = 'none'
+                    }
+                }
+            }
+        },
         editWord(word) {
             this.word = { ...word }
             this.editDialog = true
+        },
+        changeStatus(id) {
+            this.$store.dispatch('dictionary/changeStatus', id)
+            this.$refs.tableDictionary.sort('status', 'ascending')
+            setTimeout(() => this.filterTable(), 0)
         },
         sortStatus(a, b) {
             return a.status - b.status

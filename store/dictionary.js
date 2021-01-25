@@ -101,6 +101,15 @@ export const mutations = {
         const i = dictionary.map(obj => obj.id).indexOf(id)
         dictionary.splice(i, 1)
     },
+    changeStatus({dictionary, status}, id) {
+        const keys = Object.keys(status)
+        const statusLoop = oldSt => (keys.length === oldSt + 1 ? 0 : oldSt + 1)
+        dictionary.forEach(obj => {
+            if (obj.id === id) {
+                obj.status = statusLoop(obj.status)
+            }
+        })
+    },
 }
 
 export const actions = {
@@ -109,5 +118,8 @@ export const actions = {
     },
     deleteWord({commit}, id) {
         commit('deleteWord', id)
+    },
+    changeStatus({commit}, id) {
+        commit('changeStatus', id)
     },
 }
