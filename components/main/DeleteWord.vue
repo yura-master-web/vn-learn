@@ -48,6 +48,7 @@ export default {
                 setTimeout(() => {
                     this.visible = false
                     this.submitDisabled = false
+                    this.disabled = false
                 }, 300)
             }
         },

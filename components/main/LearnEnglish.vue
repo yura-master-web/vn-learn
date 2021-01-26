@@ -105,6 +105,14 @@ export default {
             this.word.eng = ''
             this.arrWordsToRepeat.splice(0, 1)
         },
+        workWithRepeatWords() {
+            if (this.arrWordsToRepeat.length === 0) {
+                this.statusLearning = true
+                this.getRandomWord()
+            } else {
+                this.getWordToCheck()
+            }
+        },
         verifyWord() {
             if (this.word.eng.trim() === this.wordEng) {
                 this.error = 'SUCCESS'
@@ -112,12 +120,7 @@ export default {
                 if (this.status === 0) {
                     this.getRandomWord()
                 } else if (this.status === 1) {
-                    if (this.arrWordsToRepeat.length === 0) {
-                        this.statusLearning = true
-                        this.getRandomWord()
-                    } else {
-                        this.getWordToCheck()
-                    }
+                    this.workWithRepeatWords()
                 }
             } else {
                 this.error = 'ERROR'
@@ -133,13 +136,9 @@ export default {
                 this.btnHelp = true
                 this.$store.dispatch('dictionary/addWordToLearn', this.word.id)
                 setTimeout(() => {
-                    if (this.arrWordsToRepeat.length === 0) {
-                        this.statusLearning = true
-                        this.getRandomWord()
-                    } else {
-                        this.getWordToCheck()
-                    }
+                    this.workWithRepeatWords()
                     this.btnHelp = false
+                    this.$refs.tableWords.$refs.tableDictionary.sort('status', 'ascending')
                 }, time)
             }
         },
@@ -193,12 +192,8 @@ export default {
         },
         addWordToNotKnow() {
             this.$store.dispatch('dictionary/addWordToLearn', this.word.id)
-            if (this.arrWordsToRepeat.length === 0) {
-                this.statusLearning = true
-                this.getRandomWord()
-            } else {
-                this.getWordToCheck()
-            }
+            this.workWithRepeatWords()
+            this.$refs.tableWords.$refs.tableDictionary.sort('status', 'ascending')
         },
     },
 }
