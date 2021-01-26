@@ -17,12 +17,23 @@ el-row(type="flex", justify="center")
                 p.h-error(v-else-if="error === 'EMPTY'", key="empty") Поля должны быть заполнены
                 p.h-success(v-else-if="error === 'ADD-TO-LIB'", key="addToLib") Слово успешно добавлено
         .mb-1
-            el-button(plain, @click="addToDictionary") Добавить слово в словарь
-            el-button(plain, @click="addWordToKnow") Я уже знаю слово
-            el-button(plain, @click="showTable = !showTable")
+            transition(mode="out-in", name="fade")
+                .btn-group(v-if="statusLearning", key="btns-group-learning")
+                    el-button(plain, @click="addToDictionary")
+                        | Добавить слово в словарь
+                    el-button(plain, @click="addWordToKnow")
+                        | Я уже знаю слово
+                    el-button(plain, @click="showTable = !showTable")
+                        transition(mode="out-in", name="fade")
+                            span(v-if="!showTable", key="a-show") Показать словарь
+                            span(v-else, key="a-hide") Скрыть словарь
+                .btn-group(v-else, key="btns-group-check")
+                    el-button(plain, @click="addWordToNotKnow")
+                        | Отметить для повторения
+            el-button.btn-status(plain, @click="toggleStatusLearning", :type="statusLearning ? 'warning' : 'success'")
                 transition(mode="out-in", name="fade")
-                    span(v-if="!showTable", key="a-show") Показать словарь
-                    span(v-else, key="a-hide") Скрыть словарь
+                    span(v-if="statusLearning", key="a-show") Статус "Учу"
+                    span(v-else, key="a-hide") Статус "Проверка выученого"
         transition(name="fade")
             app-table-words(v-show="showTable", @chage-status="getRandomWord", ref="tableWords")
 </template>
@@ -44,6 +55,7 @@ export default {
             emptyRus: false,
             emptyEng: false,
             showTable: true,
+            statusLearning: true,
         }
     },
     computed: {
@@ -115,6 +127,14 @@ export default {
             this.$refs.tableWords.$refs.tableDictionary.sort('status', 'ascending')
             this.getRandomWord()
         },
+        toggleStatusLearning() {
+            this.statusLearning = !this.statusLearning
+            // statusLearning === true -> кнопка учу, ничего не заблокировано
+            if (!this.statusLearning) {
+                this.showTable = false
+            }
+        },
+        addWordToNotKnow() {},
     },
 }
 // @keyup.enter.native="$event.target.blur"
@@ -151,6 +171,10 @@ export default {
     color gray
 .h-help
     color orange
+.btn-group
+    display inline-block
+.btn-status
+    margin-left 10px
 </style>
 <style lang="stylus">
 .empty input
