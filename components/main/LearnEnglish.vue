@@ -2,9 +2,9 @@
 el-row(type="flex", justify="center")
     el-col.header-container(:lg="20")
         .wrap-inputs.mb-1
-            el-input(v-model="inputRus", :class="{ empty: emptyRus }")
+            el-input(v-model="word.rus", :class="{ empty: emptyRus }")
             .sepor
-            el-input(v-model="inputEng", :class="{ empty: emptyEng }", @keyup.enter.native="checkEnter")
+            el-input(v-model="word.eng", :class="{ empty: emptyEng }", @keyup.enter.native="checkEnter")
         div
             el-button(type="primary", plain, @click="verifyWord") Проверить
             el-button(type="warning", plain, @click="showHelp") Подсказать
@@ -18,7 +18,8 @@ el-row(type="flex", justify="center")
                 p.h-success(v-else-if="error === 'ADD-TO-LIB'", key="addToLib") Слово успешно добавлено
         .mb-1
             el-button(plain, @click="addToDictionary") Добавить слово в словарь
-        app-table-words(@chageStatus="getRandomWord")
+            el-button(plain, @click="addWordToKnow") Я уже знаю слово
+        app-table-words(@chage-status="getRandomWord", ref="tableWords")
 </template>
 
 <script>
@@ -31,8 +32,7 @@ export default {
     },
     data() {
         return {
-            inputRus: '',
-            inputEng: '',
+            word: {},
             status: 0,
             wordEng: '',
             error: '',
@@ -53,18 +53,18 @@ export default {
     methods: {
         getRandomWord() {
             if (this.wordsLearning.length === 0) {
-                this.inputRus = ''
+                this.word.rus = ''
                 this.wordEng = 'Empty word rus'
             } else {
-                const word = this.wordsLearning[Math.floor(Math.random() * this.wordsLearning.length)]
-                this.inputRus = word.rus
-                this.wordEng = word.eng
+                this.word = { ...this.wordsLearning[Math.floor(Math.random() * this.wordsLearning.length)] }
+                this.wordEng = this.word.eng
+                this.word.eng = ''
             }
         },
         verifyWord() {
-            if (this.inputEng.trim() === this.wordEng) {
+            if (this.word.eng.trim() === this.wordEng) {
                 this.error = 'SUCCESS'
-                this.inputEng = ''
+                this.word.eng = ''
                 this.getRandomWord()
             } else {
                 this.error = 'ERROR'
@@ -81,18 +81,18 @@ export default {
             }, time)
         },
         addToDictionary() {
-            if (this.inputRus === '' || this.inputEng === '') {
+            if (this.word.rus === '' || this.word.eng === '') {
                 this.error = 'EMPTY'
-                this.emptyRus = this.inputRus === '' ? !0 : !1
-                this.emptyEng = this.inputEng === '' ? !0 : !1
+                this.emptyRus = this.word.rus === '' ? !0 : !1
+                this.emptyEng = this.word.eng === '' ? !0 : !1
                 return false
             } else {
                 this.error = ''
                 this.emptyRus = ''
                 this.emptyEng = ''
             }
-            const rus = this.inputRus.trim()
-            const eng = this.inputEng.trim()
+            const rus = this.word.rus.trim()
+            const eng = this.word.eng.trim()
             if (this.words.every(obj => (obj.rus === rus || obj.eng === eng ? !1 : !0))) {
                 this.$store.dispatch('dictionary/addToDictionary', {
                     rus,
@@ -103,6 +103,11 @@ export default {
             } else {
                 this.error = 'IS-ALREADY'
             }
+        },
+        addWordToKnow() {
+            this.$store.dispatch('dictionary/addWordToKnow', this.word.id)
+            this.$refs.tableWords.$refs.tableDictionary.sort('status', 'ascending')
+            this.getRandomWord()
         },
     },
 }

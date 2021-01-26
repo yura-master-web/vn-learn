@@ -79,7 +79,7 @@ export default {
             this.$store.dispatch('dictionary/changeStatus', id)
             this.$refs.tableDictionary.sort('status', 'ascending')
             setTimeout(() => this.filterTable(), 0)
-            this.$emit('chageStatus')
+            this.$emit('chage-status')
         },
         sortStatus(a, b) {
             return a.status - b.status

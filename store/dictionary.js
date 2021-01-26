@@ -114,6 +114,16 @@ export const mutations = {
         word.id = Date.now()
         dictionary.push(word)
     },
+    addWordToKnow({dictionary}, id) {
+        dictionary.every(obj => {
+            if (obj.id === id) {
+                obj.status = 1
+                return false
+            } else {
+                return true
+            }
+        })
+    },
 }
 
 export const actions = {
@@ -128,5 +138,8 @@ export const actions = {
     },
     addToDictionary({commit}, word) {
         commit('addToDictionary', word)
+    },
+    addWordToKnow({commit}, id) {
+        commit('addWordToKnow', id)
     },
 }
