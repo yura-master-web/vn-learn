@@ -19,7 +19,12 @@ el-row(type="flex", justify="center")
         .mb-1
             el-button(plain, @click="addToDictionary") Добавить слово в словарь
             el-button(plain, @click="addWordToKnow") Я уже знаю слово
-        app-table-words(@chage-status="getRandomWord", ref="tableWords")
+            el-button(plain, @click="showTable = !showTable")
+                transition(mode="out-in", name="fade")
+                    span(v-if="!showTable", key="a-show") Показать словарь
+                    span(v-else, key="a-hide") Скрыть словарь
+        transition(name="fade")
+            app-table-words(v-show="showTable", @chage-status="getRandomWord", ref="tableWords")
 </template>
 
 <script>
@@ -38,6 +43,7 @@ export default {
             error: '',
             emptyRus: false,
             emptyEng: false,
+            showTable: true,
         }
     },
     computed: {
