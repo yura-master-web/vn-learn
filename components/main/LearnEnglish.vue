@@ -1,6 +1,6 @@
 <template lang="pug">
 el-row(type="flex", justify="center")
-    el-col.header-container(:lg="20")
+    el-col.header-container(:lg="22")
         .wrap-inputs.mb-1
             el-input(v-model="word.rus", :class="{ empty: emptyRus }")
             .sepor
