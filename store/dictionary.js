@@ -83,9 +83,7 @@ export const state = () => ({
 export const getters = {
     getAllWords: state => state.dictionary,
     getStatus: state => state.status,
-    wordsLearn: state => {
-        return state.dictionary.filter(obj => obj.status === 0)
-    },
+    getWordsLearn: state => status => state.dictionary.filter(obj => obj.status === status),
 }
 
 export const mutations = {
@@ -124,6 +122,16 @@ export const mutations = {
             }
         })
     },
+    addWordToLearn({dictionary}, id) {
+        dictionary.every(obj => {
+            if (obj.id === id) {
+                obj.status = 0
+                return false
+            } else {
+                return true
+            }
+        })
+    },
 }
 
 export const actions = {
@@ -141,5 +149,8 @@ export const actions = {
     },
     addWordToKnow({commit}, id) {
         commit('addWordToKnow', id)
+    },
+    addWordToLearn({commit}, id) {
+        commit('addWordToLearn', id)
     },
 }

@@ -4,10 +4,10 @@ el-row(type="flex", justify="center")
         .wrap-inputs.mb-1
             el-input(v-model="word.rus", :class="{ empty: emptyRus }")
             .sepor
-            el-input(v-model="word.eng", :class="{ empty: emptyEng }", @keyup.enter.native="checkEnter")
+            el-input(v-model="word.eng", :class="{ empty: emptyEng }", @keyup.enter.native="verifyWord")
         div
             el-button(type="primary", plain, @click="verifyWord") Проверить
-            el-button(type="warning", plain, @click="showHelp") Подсказать
+            el-button(type="warning", plain, @click="showHelp", :disabled="btnHelp") Подсказать
         .status-field
             transition(mode="out-in", name="fade")
                 p.h-success(v-if="error === 'SUCCESS'", key="success") Все верно!!!
@@ -41,6 +41,7 @@ el-row(type="flex", justify="center")
 <script>
 import { mapGetters } from 'vuex'
 import AppTableWords from './TableWords'
+import { shuffle } from './random-order-array.js'
 export default {
     name: 'LearnEnglish',
     components: {
@@ -49,20 +50,26 @@ export default {
     data() {
         return {
             word: {},
-            status: 0,
             wordEng: '',
             error: '',
             emptyRus: false,
             emptyEng: false,
             showTable: true,
             statusLearning: true,
+            arrWordsToRepeat: [],
+            btnHelp: false,
         }
     },
     computed: {
         ...mapGetters('dictionary', {
             words: 'getAllWords',
-            wordsLearning: 'wordsLearn',
         }),
+        status() {
+            return this.statusLearning ? 0 : 1
+        },
+        wordsLearning() {
+            return this.$store.getters['dictionary/getWordsLearn'](this.status)
+        },
     },
     created() {
         this.getRandomWord()
@@ -79,17 +86,38 @@ export default {
                 this.word.eng = ''
             }
         },
+        getWordToCheck() {
+            let index = null
+            this.wordsLearning.every((obj, i) => {
+                if (obj.id === this.arrWordsToRepeat[0]) {
+                    index = i
+                    return false
+                } else {
+                    return true
+                }
+            })
+            this.word = { ...this.wordsLearning[index] }
+            this.wordEng = this.word.eng
+            this.word.eng = ''
+            this.arrWordsToRepeat.splice(0, 1)
+        },
         verifyWord() {
             if (this.word.eng.trim() === this.wordEng) {
                 this.error = 'SUCCESS'
                 this.word.eng = ''
-                this.getRandomWord()
+                if (this.status === 0) {
+                    this.getRandomWord()
+                } else if (this.status === 1) {
+                    if (this.arrWordsToRepeat.length === 0) {
+                        this.statusLearning = true
+                        this.getRandomWord()
+                    } else {
+                        this.getWordToCheck()
+                    }
+                }
             } else {
                 this.error = 'ERROR'
             }
-        },
-        checkEnter() {
-            this.verifyWord()
         },
         showHelp() {
             const time = this.error !== '' ? 800 : 500
@@ -97,6 +125,19 @@ export default {
             setTimeout(() => {
                 this.error = ''
             }, time)
+            if (this.status === 1) {
+                this.btnHelp = true
+                this.$store.dispatch('dictionary/addWordToLearn', this.word.id)
+                setTimeout(() => {
+                    if (this.arrWordsToRepeat.length === 0) {
+                        this.statusLearning = true
+                        this.getRandomWord()
+                    } else {
+                        this.getWordToCheck()
+                    }
+                    this.btnHelp = false
+                }, time)
+            }
         },
         addToDictionary() {
             if (this.word.rus === '' || this.word.eng === '') {
@@ -129,12 +170,32 @@ export default {
         },
         toggleStatusLearning() {
             this.statusLearning = !this.statusLearning
-            // statusLearning === true -> кнопка учу, ничего не заблокировано
+            // statusLearning === true -> статус учу
             if (!this.statusLearning) {
                 this.showTable = false
+                const arrIds = Array.from(this.wordsLearning, ({ id }) => id)
+                this.arrWordsToRepeat = shuffle(arrIds)
+                if (this.arrWordsToRepeat.length !== 0) {
+                    this.getWordToCheck()
+                } else {
+                    this.statusLearning = !this.statusLearning
+                    this.$message({
+                        type: 'warning',
+                        message: `Нет слов для проверки`,
+                    })
+                    this.getRandomWord()
+                }
             }
         },
-        addWordToNotKnow() {},
+        addWordToNotKnow() {
+            this.$store.dispatch('dictionary/addWordToLearn', this.word.id)
+            if (this.arrWordsToRepeat.length === 0) {
+                this.statusLearning = true
+                this.getRandomWord()
+            } else {
+                this.getWordToCheck()
+            }
+        },
     },
 }
 // @keyup.enter.native="$event.target.blur"
