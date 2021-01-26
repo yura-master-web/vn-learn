@@ -71,7 +71,11 @@ export default {
             return this.$store.getters['dictionary/getWordsLearn'](this.status)
         },
     },
-    created() {
+    mounted() {
+        const stateStorage = window.localStorage.getItem('vue-learnEnglish')
+        if (stateStorage) {
+            this.$store.dispatch('dictionary/addAllWords', JSON.parse(stateStorage))
+        }
         this.getRandomWord()
         this.$nuxt.$on('get-random-word', this.getRandomWord)
     },

@@ -98,6 +98,7 @@ export const mutations = {
     deleteWord({dictionary}, id) {
         const i = dictionary.map(obj => obj.id).indexOf(id)
         dictionary.splice(i, 1)
+        window.localStorage.setItem('vue-learnEnglish', JSON.stringify(dictionary))
     },
     changeStatus({dictionary, status}, id) {
         const keys = Object.keys(status)
@@ -107,10 +108,12 @@ export const mutations = {
                 obj.status = statusLoop(obj.status)
             }
         })
+        window.localStorage.setItem('vue-learnEnglish', JSON.stringify(dictionary))
     },
     addToDictionary({dictionary}, word) {
         word.id = Date.now()
         dictionary.push(word)
+        window.localStorage.setItem('vue-learnEnglish', JSON.stringify(dictionary))
     },
     addWordToKnow({dictionary}, id) {
         dictionary.every(obj => {
@@ -121,6 +124,7 @@ export const mutations = {
                 return true
             }
         })
+        window.localStorage.setItem('vue-learnEnglish', JSON.stringify(dictionary))
     },
     addWordToLearn({dictionary}, id) {
         dictionary.every(obj => {
@@ -131,6 +135,10 @@ export const mutations = {
                 return true
             }
         })
+        window.localStorage.setItem('vue-learnEnglish', JSON.stringify(dictionary))
+    },
+    addAllWords(store, arr) {
+        this._vm.$set(store, 'dictionary', arr)
     },
 }
 
@@ -152,5 +160,8 @@ export const actions = {
     },
     addWordToLearn({commit}, id) {
         commit('addWordToLearn', id)
+    },
+    addAllWords({commit}, arr) {
+        commit('addAllWords', arr)
     },
 }
